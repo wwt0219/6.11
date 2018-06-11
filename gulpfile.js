@@ -7,10 +7,11 @@ var concat = require('gulp-concat');
 var server = require('gulp-webserver');
 var fs = require('fs');
 var url = require('url');
-var path = require('path')
+var path = require('path');
+var sequence = require('gulp-sequence');
 
 gulp.task('server', function() {
-    gulp.src('src')
+    return gulp.src('src')
         .pipe(server({
             port: 8080,
             livereload: true,
@@ -30,20 +31,37 @@ gulp.task('server', function() {
 });
 
 gulp.task('srcCss', function() {
-    gulp.src('src/css/*.css')
+    return gulp.src('src/css/*.scss')
         .pipe(sass())
         .pipe(gulp.dest('src/css'))
 })
 
-// gulp.task('srcCss', function() {
-//     gulp.src('src/css/*.css')
-//         .pipe(sass())
-//         .pipe(concat('all.js'))
-//         .pipe(gulp.dest('src/css'))
-// })
+gulp.task('buildCss', function() {
+    return gulp.src('src/css/*.scss')
+        .pipe(sass())
+        .pipe(concat('all.css'))
+        .pipe(minCss())
+        .pipe(gulp.dest('build/css'))
+})
 
-gulp.task('srcjs', function() {
-    gulp.src('src/js/*.js')
+gulp.task('srcJs', function() {
+    return gulp.src('src/js/*.js')
         .pipe(uglify())
         .pipe(gulp.dest('src/js'))
+})
+
+
+gulp.task('buildJs', ['srcJs'], function() {
+    return gulp.src('src/js/*.js')
+        .pipe(concat('all.js'))
+        .pipe(uglify())
+        .pipe(gulp.dest('build/js'))
+})
+gulp.task('clean', function() {
+    return gulp.src('build')
+        .pipe(clean())
+})
+
+gulp.task('build', function(cb) {
+    sequence('clean', 'srcCss', 'buildCss', 'srcJs', 'buildJs', 'server', cb)
 })
