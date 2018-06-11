@@ -9,7 +9,7 @@ var fs = require('fs');
 var url = require('url');
 var path = require('path');
 var sequence = require('gulp-sequence');
-
+//起服务
 gulp.task('server', function() {
     return gulp.src('src')
         .pipe(server({
@@ -30,12 +30,14 @@ gulp.task('server', function() {
         }))
 });
 
+//开发css
 gulp.task('srcCss', function() {
     return gulp.src('src/css/*.scss')
         .pipe(sass())
         .pipe(gulp.dest('src/css'))
 })
 
+//线上css
 gulp.task('buildCss', function() {
     return gulp.src('src/css/*.scss')
         .pipe(sass())
@@ -44,13 +46,14 @@ gulp.task('buildCss', function() {
         .pipe(gulp.dest('build/css'))
 })
 
+//开发js
 gulp.task('srcJs', function() {
     return gulp.src('src/js/*.js')
         .pipe(uglify())
         .pipe(gulp.dest('src/js'))
 })
 
-
+//线上js
 gulp.task('buildJs', ['srcJs'], function() {
     return gulp.src('src/js/*.js')
         .pipe(concat('all.js'))
